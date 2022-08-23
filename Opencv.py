@@ -7,7 +7,7 @@ class Opencv(object):
         ...
 
     @staticmethod
-    def __match_template(canvas: np.array, THRESHOLD: float, PATH: str):
+    def __match_template(canvas: np.array, PATH: str):
         match = cv.matchTemplate(
             canvas,
             cv.imread(PATH, cv.IMREAD_UNCHANGED),
@@ -15,20 +15,9 @@ class Opencv(object):
         _, max_val, _, max_loc = cv.minMaxLoc(match)
         return max_val, max_loc
 
-    def detect_drop(self, canvas: np.array, PATH: str, THRESHOLD: float = .7) -> bool:
+    def detect(self, canvas: np.array, PATH: str, THRESHOLD: float = .7) -> bool:
         max_val, _ = self.__match_template(
             canvas=canvas,
-            THRESHOLD=THRESHOLD,
-            PATH=PATH
-        )
-        if max_val > THRESHOLD:
-            return True
-        return False
-
-    def detect_hook(self, canvas: np.array, PATH: str, THRESHOLD: float = .7) -> bool:
-        max_val, _ = self.__match_template(
-            canvas=canvas,
-            THRESHOLD=THRESHOLD,
             PATH=PATH
         )
         if max_val > THRESHOLD:
@@ -38,13 +27,6 @@ class Opencv(object):
     def detect_pull(self, canvas: np.array, PATH: str, THRESHOLD: float) -> tuple:
         max_val, max_loc = self.__match_template(
             canvas=canvas,
-            THRESHOLD=THRESHOLD,
             PATH=PATH
         )
         return max_val, max_loc
-
-    def detect_release(self, canvas) -> bool:
-        return False
-
-    def is_hotspot_in_front(self, canvas):
-        return False
