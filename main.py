@@ -3,11 +3,10 @@ from ctypes import windll
 import numpy as np
 import cv2 as cv
 import keyboard
-import pyautogui
 from time import sleep
 
 from Screen import Screen
-from Opencv import Opencv2
+from Opencv import Opencv
 
 
 def empty(a):
@@ -15,16 +14,7 @@ def empty(a):
 
 
 def main():
-    opencv = Opencv2()
-    cv.namedWindow("trackBars")
-    cv.resizeWindow("trackBars", 640, 240)
-    cv.createTrackbar("h min", 'trackBars', 0, 179, empty)
-    cv.createTrackbar("h max", 'trackBars', 179, 179, empty)
-    cv.createTrackbar("s min", 'trackBars', 0, 255, empty)
-    cv.createTrackbar("s max", 'trackBars', 255, 255, empty)
-    cv.createTrackbar("v min", 'trackBars', 0, 255, empty)
-    cv.createTrackbar("v max", 'trackBars', 255, 255, empty)
-
+    opencv = Opencv()
     while True:
         hwnd: int = windll.user32.FindWindowW(0, "New World")
         rect: tuple = GetWindowRect(hwnd)
@@ -36,42 +26,65 @@ def main():
         screen: Screen = Screen()
         img: np.array = screen.grab(x=x, y=y, w=w, h=h)
 
-        #img = cv.imread('images/20220822181135_1.jpg')
+        img_gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-        hsv_canvas = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+        """
+        circles = cv.HoughCircles(img_gray, cv.HOUGH_GRADIENT, 1, img_gray.shape[0] / 8,
+                                   param1=100, param2=60,
+                                   minRadius=30, maxRadius=300)
 
-        h_min = cv.getTrackbarPos("h min", 'trackBars')
-        h_max = cv.getTrackbarPos("h max", 'trackBars')
-        s_min = cv.getTrackbarPos("s min", 'trackBars')
-        s_max = cv.getTrackbarPos("s max", 'trackBars')
-        v_min = cv.getTrackbarPos("v min", 'trackBars')
-        v_max = cv.getTrackbarPos("v max", 'trackBars')
-        hsv_canvas = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-        lower = np.array([70, 170, 60])
-        upper = np.array([90, 255, 255])
-        mask = cv.inRange(hsv_canvas, lower, upper)
+        res = np.zeros(img.shape)
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
+            for i in circles[0, :]:
+                center = (i[0], i[1])
+                # circle center
+                cv.circle(res, center, 1, (0, 100, 100), 3)
+                # circle outline
+                radius = i[2]
+                cv.circle(res, center, radius, (255, 0, 255), 3)
+        """
 
-        if opencv.detect_hook(.9, canvas=img):
+        if opencv.detect_hook(canvas=img, THRESHOLD=.9, PATH=r'images/hook_samples/hook.png'):
             keyboard.press_and_release("space")
             print('clicked')
 
-        while opencv.detect_pull(.8, canvas=img):
-            print('press_space_button')
-
+        max_val, max_loc = opencv.detect_pull(canvas=img, THRESHOLD=.975, PATH=r'images/circle_samples/circle.png')
+        '''
+        sleep(1)
+        if not keyboard.is_pressed('space'):
+            keyboard.press('space')
         '''
 
+        if opencv.detect_release(canvas=img):
+            sleep(1)
+            keyboard.release('space')
 
-        opencv.set_canvas(canvas=img)
-        
+        if opencv.detect_drop(canvas=img, THRESHOLD=.8, PATH=r'images/drop_samples/drop_1.png') & \
+                opencv.is_hotspot_in_front(canvas=img):
+            keyboard.press_and_release('space')
 
+        x = max_loc[0]+5
+        y = max_loc[1]+10
 
-        if opencv.detect_release(.8):
-            print('release_mouse_button')
-        '''
-        cv.imshow("test", img)
+        img_sample = cv.imread(r'images/circle_samples/circle.png')
+        w = img_sample.shape[0]//2
+        h = img_sample.shape[1]//2-4
+
+        start = (x, y)
+        end = (x+w, y+h)
+
+        blurred_image = cv.GaussianBlur(img, (5, 5), 0)
+
+        image = cv.rectangle(blurred_image, start, end, (255, 0, 0), 2)
+
+        color_ = blurred_image[x+(w//2), y+(h//2)]
+
+        area_of_interest = blurred_image[x:x+w//2, y:y+h//2]
+
+        cv.imshow("test", image)
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
-
 
 
 if __name__ == '__main__':
