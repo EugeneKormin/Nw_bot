@@ -1,0 +1,24 @@
+# Создание и обучение нейронной сети выполнено в google colab, так как комп не справлялся с преобразованием массивов
+# https://colab.research.google.com/drive/1zaqQ3tFG7zv4-dv88PM1utVmLCQsF3rZ?hl=en#scrollTo=xWJ0ELZ0dWto
+
+samples
+    -- ~название шаблонов~       / шаблоны для распознавания цифр координат
+
+Utils
+    --__init__.py
+    --Keys.py                       / адаптация управления играми на основе DirectX
+    --Trackbar.py                   / создание трекбара для подбора значений в режиме онлайн
+
+venv
+    --Lib
+    --Scripts
+    --share
+    --.gitignore
+    --pyvenv.cfg
+
+DigitRecognition.py               / модуль для распознавания изображений координат
+Gathering.py                      / логика бота, который собирает ресурсы
+README                            / описание проекта
+RunBot.py                         / запуск основного скрипта
+Screen.py                         / обработка фреймов
+Variables.py                      / переенные, которые во время работы скриптов не изменяют свои значения

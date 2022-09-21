@@ -1,0 +1,12 @@
+DIGIT_WIDTH: int = 7
+DIGIT_HEIGHT: int = 10
+DISTANCE_BETWEEN_DIGITS_COORDS: int = 9
+SHIFT: int = 18
+SCALING_FACTOR: int = 12
+UPPER_LINE: int = 53
+WINDOW_NAME: str = 'New World'
+
+ore_route: dict = {
+    "X": [8903.3, 8902.825, 8917.571, 8969.817, ],
+    'Y': [4222.6, 4293.800, 4346.300, 4421.762, ]
+}
