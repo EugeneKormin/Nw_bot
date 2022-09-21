@@ -1,6 +1,3 @@
-# Создание и обучение нейронной сети выполнено в google colab, так как комп не справлялся с преобразованием массивов
-# https://colab.research.google.com/drive/1zaqQ3tFG7zv4-dv88PM1utVmLCQsF3rZ?hl=en#scrollTo=xWJ0ELZ0dWto
-
 samples
     -- ~название шаблонов~       / шаблоны для распознавания цифр координат
 
